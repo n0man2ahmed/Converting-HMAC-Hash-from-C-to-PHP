@@ -1,0 +1,70 @@
+C# Code:
+
+            string APPId = "f582b842db2d455b90fe8d9bb5f6de4e";//public
+            string APIKey = "WR3BaiHVX2IASgf0ff8AJClUCTxkh2Kr48uiA1SOKn0=";//private
+
+            //HttpResponseMessage response = null;
+            string requestContentBase64String = string.Empty;
+            string strngResponse = string.Empty;
+            string requestUri = System.Web.HttpUtility.UrlEncode(RequestUri.ToLower());
+            RequestHttpMethodType = RequestHttpMethodType.ToLower();
+
+            //Calculate UNIX time
+            DateTime epochStart = new DateTime(1970, 01, 01, 0, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan timeSpan = DateTime.UtcNow - epochStart;
+            string requestTimeStamp = Convert.ToUInt64(timeSpan.TotalSeconds).ToString();
+
+            //create random nonce for each request
+            string nonce = Guid.NewGuid().ToString("N");
+
+            //Creating the raw signature string
+            string signatureRawData = String.Format("{0}{1}{2}{3}{4}", APPId, RequestHttpMethodType, requestUri, requestTimeStamp, nonce);
+            //Console.WriteLine("signatureRawData {0}", signatureRawData);
+            var secretKeyByteArray = Convert.FromBase64String(APIKey);
+
+            byte[] signature = Encoding.UTF8.GetBytes(signatureRawData);
+
+            using (HMACSHA256 hmac = new HMACSHA256(secretKeyByteArray))
+            {
+                byte[] signatureBytes = hmac.ComputeHash(signature);
+                string requestSignatureBase64String = Convert.ToBase64String(signatureBytes);
+
+                strngResponse = "TW_HMAC " + APPId + ":" + requestSignatureBase64String + ":" + nonce + ":" + requestTimeStamp;
+            }
+
+
+
+PHP Code:
+
+$APPId = "f582b842db2d455b90fe8d9bb5f6de4e";
+$APIKey = "WR3BaiHVX2IASgf0ff8AJClUCTxkh2Kr48uiA1SOKn0=";
+
+// decoding API KEY 
+$fromBase64=base64_decode($APIKey);
+
+// getting current time in unix format
+$requestTimeStamp=strtotime("now");
+
+// generating random string also known as nonce
+$nonce=generateRandomString();
+
+// method which will be used for token
+$requestHttpMethod = "get";
+$requestHttpMethod=strtolower($requestHttpMethod);
+
+// request URL 
+$requestUri = "http://103.8.112.78/TWSigmaAPI/api/Vehicle/GetVehiclesByLoginId";
+$requestUri=strtolower(rawurlencode($requestUri));
+
+// applying hashing on signature Data 
+$signatureRawData=$APPId.$requestHttpMethod.$requestUri.$requestTimeStamp.$nonce;
+$hash = hash_hmac('sha256',utf8_encode($signatureRawData),$fromBase64,false);
+
+// here either you can use biult in  hex2bin() or  hextobin 
+$hash=hextobin($hash);
+
+// encoding hashing result
+$requestSignatureBase64String = base64_encode($hash);
+
+// here is final sigma authorization token
+$sigmaAuthorization= "TW_HMAC ".$APPId.":".$requestSignatureBase64String.":".$nonce.":".$requestTimeStamp;
