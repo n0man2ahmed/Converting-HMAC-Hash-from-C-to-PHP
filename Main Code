@@ -1,7 +1,7 @@
 C# Code:
 
-            string APPId = "f582b842db2d455b90fe8d9bb5f6de4e";//public
-            string APIKey = "WR3BaiHVX2IASgf0ff8AJClUCTxkh2Kr48uiA1SOKn0=";//private
+            string APPId = "f582b842";//public
+            string APIKey = "WR3BaiHVX2";//private
 
             //HttpResponseMessage response = null;
             string requestContentBase64String = string.Empty;
@@ -36,8 +36,8 @@ C# Code:
 
 PHP Code:
 
-$APPId = "f582b842db2d455b90fe8d9bb5f6de4e";
-$APIKey = "WR3BaiHVX2IASgf0ff8AJClUCTxkh2Kr48uiA1SOKn0=";
+$APPId = "f582b842";
+$APIKey = "WR3BaiHVX2";
 
 // decoding API KEY 
 $fromBase64=base64_decode($APIKey);
@@ -53,7 +53,7 @@ $requestHttpMethod = "get";
 $requestHttpMethod=strtolower($requestHttpMethod);
 
 // request URL 
-$requestUri = "http://103.8.112.78/TWSigmaAPI/api/Vehicle/GetVehiclesByLoginId";
+$requestUri = "http://103.8.112.78";
 $requestUri=strtolower(rawurlencode($requestUri));
 
 // applying hashing on signature Data 
